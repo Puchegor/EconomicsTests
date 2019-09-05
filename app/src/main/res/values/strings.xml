@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">EconomicsTests</string>
+    <string name="app_name">Тесты по экономической теории</string>
     <string name="rbCourceText">Проверочный тест по курсу</string>
     <string name="rbThemeText">Проверочный тест по теме</string>
     <string name="rbStudyText">Обучающий тест по теме</string>
     <string name="textViewTxt">Доступные темы:</string>
     <string name="txvChoiseTxt">Выберите тип теста:</string>
+    <string name="btnStartTxt">Начать</string>
 </resources>
