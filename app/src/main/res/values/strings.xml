@@ -6,4 +6,7 @@
     <string name="textViewTxt">Доступные темы:</string>
     <string name="txvChoiseTxt">Выберите тип теста:</string>
     <string name="btnStartTxt">Начать</string>
+    <string name="btnOkTxt">Подтвердить</string>
+    <string name="btnSkipTxt">Пропустить</string>
+    <string name="btnCancelTxt">Отмена</string>
 </resources>

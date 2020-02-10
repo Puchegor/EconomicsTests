@@ -23,7 +23,7 @@
     DBHelper dbHelper;
     SQLiteDatabase db;
     Button btnStart;
-    private static ArrayList<Question>Test = new ArrayList<>();
+    private ArrayList<Question>Test = new ArrayList<>();
 
     final String LOG_TAG = "myLOGS";
     int choise = -1;
@@ -50,16 +50,6 @@
                 choise = position;
             }
         });
-        listView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //choise = position;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
         btnStart = findViewById(R.id.btnStart);
         btnStart.setOnClickListener(this);
         onClick(rbStudy);
@@ -78,7 +68,7 @@
                 list.add(cursor.getString(index));
                 cursor.moveToNext();
             }
-            adapter  = new ArrayAdapter<>(this, android.R.layout.simple_list_item_single_choice  , list);
+            adapter  = new ArrayAdapter<>(this, R.layout.list_item  , list);
             listView.setAdapter(adapter);
             cursor.close();
         }catch(SQLException e){
@@ -118,8 +108,10 @@
                         Cursor cursor = db.rawQuery("SELECT _id FROM topics WHERE nameTopic = \""+
                                 list.get(choise)+"\"", null);
                         cursor.moveToFirst();
-                        //intent.putExtra("test",createTest(cursor.getInt(cursor.getColumnIndex("_id"))));
-                        Test = createTest(cursor.getInt(cursor.getColumnIndex("_id")));
+                        //debug
+                        int idTopic = cursor.getInt(cursor.getColumnIndex("_id"));
+                        ArrayList<Question>test = createTest(idTopic);
+                        intent.putParcelableArrayListExtra("test", test);
                         cursor.close();
                         choise = -1;
                     }
@@ -129,41 +121,39 @@
      }
      private ArrayList<Question> createTest(int idTopic){
         ArrayList<Question>questions = new ArrayList<>();
-        ArrayList<Answer> answers= new ArrayList<>();
+
         try{
-            Cursor cursor = db.rawQuery("SELECT * FROM questions WHERE _id = "+idTopic, null);
+            Cursor cursor = db.rawQuery("SELECT * FROM questions WHERE idTopic = "+idTopic, null);
             cursor.moveToFirst();
             while(!cursor.isAfterLast()){
                 int idQuestion = cursor.getInt(cursor.getColumnIndex("_id"));
+                ArrayList<Answer> Answers= new ArrayList<>();
                 Cursor cursorAnswers = db.rawQuery("SELECT * FROM answers WHERE idQuestion = "+idQuestion, null);
                 cursorAnswers.moveToFirst();
                 while (!cursorAnswers.isAfterLast()){
                     boolean isTrue;
-                    if (cursorAnswers.getInt(cursorAnswers.getColumnIndex("isTrue"))==0)
+                    if (cursorAnswers.getInt(cursorAnswers.getColumnIndex("isCorrect"))==0)
                         isTrue = false;
                     else
                         isTrue = true;
                     Answer answer = new Answer(idQuestion,
                             cursorAnswers.getInt(cursorAnswers.getColumnIndex("_id")),
-                            cursorAnswers.getString(cursorAnswers.getColumnIndex("answer")),
+                            cursorAnswers.getString(cursorAnswers.getColumnIndex("nameAnswer")),
                             isTrue);
-                    answers.add(answer);
+                    Answers.add(answer);
                     cursorAnswers.moveToNext();
                 }
                 cursorAnswers.close();
                 Question quest = new Question(idTopic,idQuestion,
                         cursor.getString(cursor.getColumnIndex("nameQuestion")),
-                        answers, cursor.getString(cursor.getColumnIndex("correctanswer")));
+                        Answers, cursor.getString(cursor.getColumnIndex("correctAnswer")));
                 questions.add(quest);
-                answers.clear();
+                cursor.moveToNext();
             }
             cursor.close();
         }catch (SQLException e){
             Log.d(LOG_TAG, e.getMessage());
         }
         return questions;
-     }
-     public static ArrayList<Question> getTest(){
-        return Test;
      }
  }
